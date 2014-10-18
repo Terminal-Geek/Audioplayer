@@ -1,0 +1,251 @@
+#!/bin/bash
+
+# Switch on status led
+
+gpio mode 26 output
+gpio write 26 1
+
+# Fill playlists
+
+xmms2 playlist clear 01 ; xmms2 add -p 01 /home/pi/audio/01/* ; xmms2 playlist sort -p 01
+xmms2 playlist clear 02 ; xmms2 add -p 02 /home/pi/audio/02/* ; xmms2 playlist sort -p 02
+xmms2 playlist clear 03 ; xmms2 add -p 03 /home/pi/audio/03/* ; xmms2 playlist sort -p 03
+xmms2 playlist clear 04 ; xmms2 add -p 04 /home/pi/audio/04/* ; xmms2 playlist sort -p 04
+xmms2 playlist clear 05 ; xmms2 add -p 05 /home/pi/audio/05/* ; xmms2 playlist sort -p 05
+xmms2 playlist clear 06 ; xmms2 add -p 06 /home/pi/audio/06/* ; xmms2 playlist sort -p 06
+
+echo "Bereit!"
+
+# Setting LED GPIO to output mode
+
+led01="29" ; gpio mode $led01 output # Button 1
+led02="28" ; gpio mode $led02 output # Button 2
+led03="27" ; gpio mode $led03 output # Button 3
+led04="25" ; gpio mode $led04 output # Button 4
+led05="24" ; gpio mode $led05 output # Button 5
+led06="23" ; gpio mode $led06 output # Button 6
+
+
+# Start loop
+
+while true
+do
+
+# Defining variables
+
+active_playlist=$(xmms2 playlist list | grep "*")
+active_playlist_nr=${active_playlist:2:2}
+
+button01=$(gpio read 1) # ; sleep 0.1 ; button01=$(gpio read 1)
+button02=$(gpio read 2)
+button03=$(gpio read 3)
+button04=$(gpio read 4)
+button05=$(gpio read 5)
+button06=$(gpio read 6)
+
+button_prev=$(gpio read 22)
+button_next=$(gpio read 21)
+
+current_playtime=$(xmms2 current -f '${playtime}')
+current_playtime_min=${current_playtime:0:2}
+current_playtime_sec=${current_playtime:3:2}
+current_song=$(xmms2 current -f '${artist} - ${title}')
+
+
+# Button 1
+
+if [ "$button01" = "1" ]
+	then
+
+       	gpio write $led02 0
+        gpio write $led03 0
+        gpio write $led04 0
+        gpio write $led05 0
+        gpio write $led06 0
+
+	status_led01=$(gpio read $led01)
+
+if [ "$status_led01" = "0" ]
+	then
+	gpio write $led01 1
+fi
+
+if [ "$active_playlist_nr" != "01" ]
+	then
+	xmms2 playlist switch 01
+	xmms2 stop
+	xmms2 jump 1
+	xmms2 play
+	else
+	xmms2 toggle
+fi
+
+
+# Button 2
+
+elif [ "$button02" = "1" ]
+	then
+
+        gpio write $led01 0
+        gpio write $led03 0
+        gpio write $led04 0
+        gpio write $led05 0
+        gpio write $led06 0
+
+        status_led02=$(gpio read $led02)
+
+if [ "$status_led02" = "0" ]
+        then
+        gpio write $led02 1
+fi
+
+if [ "$active_playlist_nr" != "02" ]
+        then
+        xmms2 playlist switch 02
+	xmms2 stop
+        xmms2 jump 1
+	xmms2 play
+	else
+	xmms2 toggle
+fi
+
+
+# Button 3
+
+elif [ "$button03" = "1" ]
+        then
+
+        gpio write $led01 0
+        gpio write $led02 0
+        gpio write $led04 0
+        gpio write $led05 0
+        gpio write $led06 0
+
+        status_led03=$(gpio read $led03)
+
+if [ "$status_led03" = "0" ]
+        then
+        gpio write $led03 1
+fi
+
+if [ "$active_playlist_nr" != "03" ]
+        then
+        xmms2 playlist switch 03
+        xmms2 stop
+        xmms2 jump 1
+        xmms2 play
+        else
+        xmms2 toggle
+fi
+
+
+# Button 4
+
+elif [ "$button04" = "1" ]
+        then
+
+        gpio write $led01 0
+        gpio write $led02 0
+        gpio write $led03 0
+        gpio write $led05 0
+        gpio write $led06 0
+
+        status_led04=$(gpio read $led04)
+
+if [ "$status_led04" = "0" ]
+        then
+        gpio write $led04 1
+fi
+
+if [ "$active_playlist_nr" != "04" ]
+        then
+        xmms2 playlist switch 04
+        xmms2 stop
+        xmms2 jump 1
+        xmms2 play
+        else
+        xmms2 toggle
+fi
+
+
+# Button 5
+
+elif [ "$button05" = "1" ]
+        then
+
+        gpio write $led01 0
+        gpio write $led02 0
+        gpio write $led03 0
+        gpio write $led04 0
+        gpio write $led06 0
+
+        status_led05=$(gpio read $led05)
+
+if [ "$status_led05" = "0" ]
+        then
+        gpio write $led05 1
+fi
+
+if [ "$active_playlist_nr" != "05" ]
+        then
+        xmms2 playlist switch 05
+        xmms2 stop
+        xmms2 jump 1
+        xmms2 play
+        else
+        xmms2 toggle
+fi
+
+
+# Button 6
+
+elif [ "$button06" = "1" ]
+        then
+
+        gpio write $led01 0
+        gpio write $led02 0
+        gpio write $led03 0
+        gpio write $led04 0
+        gpio write $led05 0
+
+        status_led06=$(gpio read $led06)
+
+if [ "$status_led06" = "0" ]
+        then
+        gpio write $led06 1
+fi
+
+if [ "$active_playlist_nr" != "06" ]
+        then
+        xmms2 playlist switch 06
+        xmms2 stop
+        xmms2 jump 1
+        xmms2 play
+        else
+        xmms2 toggle
+fi
+
+
+# Button previous title
+
+elif [ "$button_prev" = "1" ]
+	then
+
+	if [ $current_playtime_min -eq "00" -a $current_playtime_sec -lt "10" ]
+		then
+		xmms2 prev > /dev/null 2>&1
+		else
+		xmms2 seek 00:00
+fi
+
+
+# Button next title
+
+elif [ "$button_next" = "1" ]
+	then
+	xmms2 next > /dev/null 2>&1
+
+
+fi
+
+done
