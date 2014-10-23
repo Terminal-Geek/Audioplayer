@@ -2,8 +2,8 @@
 
 # Switch on status led
 
-gpio mode 26 output
-gpio write 26 1
+# gpio mode 26 output
+# gpio write 26 1
 
 # Fill playlists
 
@@ -18,12 +18,29 @@ echo "Bereit!"
 
 # Setting LED GPIO to output mode
 
-led01="29" ; gpio mode $led01 output # Button 1
-led02="28" ; gpio mode $led02 output # Button 2
-led03="27" ; gpio mode $led03 output # Button 3
-led04="25" ; gpio mode $led04 output # Button 4
-led05="24" ; gpio mode $led05 output # Button 5
-led06="23" ; gpio mode $led06 output # Button 6
+led01="28" ; gpio mode $led01 output # LED 1
+led02="29" ; gpio mode $led02 output # LED 2
+led03="24" ; gpio mode $led03 output # LED 3
+led04="21" ; gpio mode $led04 output # LED 4
+led05="7" ; gpio mode $led05 output # LED 5
+led06="4" ; gpio mode $led06 output # LED 6
+
+# Setting all relevant GPIO pins to 0
+
+gpio write $led01 0
+gpio write $led02 0
+gpio write $led03 0
+gpio write $led04 0
+gpio write $led05 0
+gpio write $led06 0
+gpio mode 27 output ; gpio write 27 0 ; gpio mode 27 input
+gpio mode 25 output ; gpio write 25 0 ; gpio mode 25 input
+gpio mode 23 output ; gpio write 23 0 ; gpio mode 23 input
+gpio mode 22 output ; gpio write 22 0 ; gpio mode 22 input
+gpio mode 3 output ; gpio write 3 0 ; gpio mode 3 input
+gpio mode 1 output ; gpio write 1 0 ; gpio mode 1 input
+gpio mode 6 output ; gpio write 6 0 ; gpio mode 6 input
+gpio mode 5 output ; gpio write 5 0 ; gpio mode 5 input
 
 
 # Start loop
@@ -36,15 +53,15 @@ do
 active_playlist=$(xmms2 playlist list | grep "*")
 active_playlist_nr=${active_playlist:2:2}
 
-button01=$(gpio read 1) # ; sleep 0.1 ; button01=$(gpio read 1)
-button02=$(gpio read 2)
-button03=$(gpio read 3)
-button04=$(gpio read 4)
-button05=$(gpio read 5)
-button06=$(gpio read 6)
+button01=$(gpio read 27)
+button02=$(gpio read 25)
+button03=$(gpio read 23)
+button04=$(gpio read 22)
+button05=$(gpio read 3)
+button06=$(gpio read 1)
 
-button_prev=$(gpio read 22)
-button_next=$(gpio read 21)
+button_prev=$(gpio read 6)
+button_next=$(gpio read 5)
 
 current_playtime=$(xmms2 current -f '${playtime}')
 current_playtime_min=${current_playtime:0:2}
@@ -142,9 +159,9 @@ fi
 # Button 4
 
 elif [ "$button04" = "1" ]
-        then
+	then
 
-        gpio write $led01 0
+	gpio write $led01 0
         gpio write $led02 0
         gpio write $led03 0
         gpio write $led05 0
