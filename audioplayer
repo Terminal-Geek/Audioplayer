@@ -16,16 +16,35 @@ xmms2 playlist clear 06 ; xmms2 add -p 06 /home/pi/audio/06/* ; xmms2 playlist s
 
 echo "Bereit!"
 
-# Setting LED GPIO to output mode
+# Define GPIO pins
 
-led01="28" ; gpio mode $led01 output # LED 1
-led02="29" ; gpio mode $led02 output # LED 2
-led03="24" ; gpio mode $led03 output # LED 3
-led04="21" ; gpio mode $led04 output # LED 4
-led05="7" ; gpio mode $led05 output # LED 5
-led06="4" ; gpio mode $led06 output # LED 6
+led01="28"
+led02="29"
+led03="24"
+led04="21"
+led05="7"
+led06="4"
 
-# Setting all relevant GPIO pins to 0
+pin_button01="27"
+pin_button02="25"
+pin_button03="23"
+pin_button04="22"
+pin_button05="3"
+pin_button06="1"
+pin_button_prev="6"
+pin_button_next="5"
+
+
+# Set LED GPIO pins to output mode
+
+gpio mode $led01 output
+gpio mode $led02 output
+gpio mode $led03 output
+gpio mode $led04 output
+gpio mode $led05 output
+gpio mode $led06 output
+
+# Set all GPIO pins to 0
 
 gpio write $led01 0
 gpio write $led02 0
@@ -33,14 +52,15 @@ gpio write $led03 0
 gpio write $led04 0
 gpio write $led05 0
 gpio write $led06 0
-gpio mode 27 output ; gpio write 27 0 ; gpio mode 27 input
-gpio mode 25 output ; gpio write 25 0 ; gpio mode 25 input
-gpio mode 23 output ; gpio write 23 0 ; gpio mode 23 input
-gpio mode 22 output ; gpio write 22 0 ; gpio mode 22 input
-gpio mode 3 output ; gpio write 3 0 ; gpio mode 3 input
-gpio mode 1 output ; gpio write 1 0 ; gpio mode 1 input
-gpio mode 6 output ; gpio write 6 0 ; gpio mode 6 input
-gpio mode 5 output ; gpio write 5 0 ; gpio mode 5 input
+
+gpio mode $pin_button01 output ; gpio write $pin_button01 0 ; gpio mode $pin_button01 input
+gpio mode $pin_button02 output ; gpio write $pin_button02 0 ; gpio mode $pin_button02 input
+gpio mode $pin_button03 output ; gpio write $pin_button03 0 ; gpio mode $pin_button03 input
+gpio mode $pin_button04 output ; gpio write $pin_button04 0 ; gpio mode $pin_button04 input
+gpio mode $pin_button05 output ; gpio write $pin_button05 0 ; gpio mode $pin_button05 input
+gpio mode $pin_button06 output ; gpio write $pin_button06 0 ; gpio mode $pin_button06 input
+gpio mode $pin_button_prev output ; gpio write $pin_button_prev 0 ; gpio mode $pin_button_prev input
+gpio mode $pin_button_next output ; gpio write $pin_button_next 0 ; gpio mode $pin_button_next input
 
 
 # Start loop
@@ -48,25 +68,24 @@ gpio mode 5 output ; gpio write 5 0 ; gpio mode 5 input
 while true
 do
 
-# Defining variables
+# Define variables
 
 active_playlist=$(xmms2 playlist list | grep "*")
 active_playlist_nr=${active_playlist:2:2}
 
-button01=$(gpio read 27)
-button02=$(gpio read 25)
-button03=$(gpio read 23)
-button04=$(gpio read 22)
-button05=$(gpio read 3)
-button06=$(gpio read 1)
+button01=$(gpio read $pin_button01)
+button02=$(gpio read $pin_button02)
+button03=$(gpio read $pin_button03)
+button04=$(gpio read $pin_button04)
+button05=$(gpio read $pin_button05)
+button06=$(gpio read $pin_button06)
 
-button_prev=$(gpio read 6)
-button_next=$(gpio read 5)
+button_prev=$(gpio read $pin_button_prev)
+button_next=$(gpio read $pin_button_next)
 
 current_playtime=$(xmms2 current -f '${playtime}')
 current_playtime_min=${current_playtime:0:2}
 current_playtime_sec=${current_playtime:3:2}
-current_song=$(xmms2 current -f '${artist} - ${title}')
 
 
 # Button 1
