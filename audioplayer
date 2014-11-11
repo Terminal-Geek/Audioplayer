@@ -1,38 +1,36 @@
 #!/bin/bash
 
-# Switch on status led
-
-# gpio mode 26 output
-# gpio write 26 1
-
 # Fill playlists
 
 xmms2 playlist clear 01 ; xmms2 add -p 01 /home/pi/audio/01/* ; xmms2 playlist sort -p 01
 xmms2 playlist clear 02 ; xmms2 add -p 02 /home/pi/audio/02/* ; xmms2 playlist sort -p 02
 xmms2 playlist clear 03 ; xmms2 add -p 03 /home/pi/audio/03/* ; xmms2 playlist sort -p 03
 xmms2 playlist clear 04 ; xmms2 add -p 04 /home/pi/audio/04/* ; xmms2 playlist sort -p 04
-xmms2 playlist clear 05 ; xmms2 add -p 05 /home/pi/audio/05/* ; xmms2 playlist sort -p 05
+xmms2 playlist clear 05 ; xmms2 add -P -p 05 /home/pi/audio/05/kiraka.m3u
 xmms2 playlist clear 06 ; xmms2 add -p 06 /home/pi/audio/06/* ; xmms2 playlist sort -p 06
 
-echo "Bereit!"
+# Switch on status led
+
+gpio mode 26 output
+gpio write 26 1
 
 # Define GPIO pins
 
-led01="28"
-led02="29"
-led03="24"
-led04="21"
-led05="7"
-led06="4"
+led01="4"
+led02="7"
+led03="21"
+led04="24"
+led05="29"
+led06="28"
 
-pin_button01="27"
-pin_button02="25"
-pin_button03="23"
-pin_button04="22"
-pin_button05="3"
-pin_button06="1"
-pin_button_prev="6"
-pin_button_next="5"
+pin_button01="1"
+pin_button02="3"
+pin_button03="22"
+pin_button04="23"
+pin_button05="25"
+pin_button06="27"
+pin_button_prev="5"
+pin_button_next="6"
 
 
 # Set LED GPIO pins to output mode
