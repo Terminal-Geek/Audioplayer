@@ -60,6 +60,23 @@ gpio mode $pin_button06 output ; gpio write $pin_button06 0 ; gpio mode $pin_but
 gpio mode $pin_button_prev output ; gpio write $pin_button_prev 0 ; gpio mode $pin_button_prev input
 gpio mode $pin_button_next output ; gpio write $pin_button_next 0 ; gpio mode $pin_button_next input
 
+# Function read playlist history
+
+typeset -i history_track_nr
+typeset -i history_playtime_min
+typeset -i history_playtime_sec
+typeset -i history_position
+
+read_playlist_history () {
+        history_track=$(grep "track" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
+        history_track_nr=${history_track##track: }
+        history_playtime=$(grep "playtime" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
+        history_playtime=${history_playtime##playtime: }
+        history_playtime_min=${history_playtime%:*}
+        history_playtime_sec=${history_playtime#*:}
+        history_position=60*$history_playtime_min+$history_playtime_sec
+                        }
+
 
 # Start loop
 
@@ -106,9 +123,12 @@ fi
 
 if [ "$active_playlist_nr" != "01" ]
 	then
+	active_playlist_nr="01"
 	xmms2 playlist switch 01
-	xmms2 stop
-	xmms2 jump 1
+	read_playlist_history
+	xmms2 pause
+	xmms2 jump $history_track_nr
+	xmms2 seek $history_position
 	xmms2 play
 	else
 	xmms2 toggle
