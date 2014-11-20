@@ -60,23 +60,24 @@ gpio mode $pin_button06 output ; gpio write $pin_button06 0 ; gpio mode $pin_but
 gpio mode $pin_button_prev output ; gpio write $pin_button_prev 0 ; gpio mode $pin_button_prev input
 gpio mode $pin_button_next output ; gpio write $pin_button_next 0 ; gpio mode $pin_button_next input
 
-# Function read playlist history
+# Function resume play
 
-typeset -i history_track_nr
-typeset -i history_playtime_min
-typeset -i history_playtime_sec
-typeset -i history_position
-
-read_playlist_history () {
-        history_track=$(grep "track" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
-        history_track_nr=${history_track##track: }
-        history_playtime=$(grep "playtime" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
+resume_play () {
+        xmms2 playlist switch $active_playlist_nr
+        xmms2 play
+        xmms2 pause
+        sleep 0.5
+        unset history_track ; history_track=$(grep "track" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
+        unset history_track_nr ; typeset -i history_track_nr ; history_track_nr=${history_track##track: }
+        unset history_playtime ; history_playtime=$(grep "playtime" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
         history_playtime=${history_playtime##playtime: }
-        history_playtime_min=${history_playtime%:*}
-        history_playtime_sec=${history_playtime#*:}
-        history_position=60*$history_playtime_min+$history_playtime_sec
+        unset history_playtime_min ; typeset -i history_playtime_min ; history_playtime_min=${history_playtime%:*}
+        unset history_playtime_sec ; typeset -i history_playtime_sec ; history_playtime_sec=${history_playtime#*:}
+        unset history_position ; typeset -i history_position ; history_position=60*$history_playtime_min+$history_playtime_sec
+        xmms2 jump $history_track_nr
+        xmms2 seek $history_position
+        xmms2 play
                         }
-
 
 # Start loop
 
@@ -123,12 +124,9 @@ fi
 
 if [ "$active_playlist_nr" != "01" ]
 	then
-	active_playlist_nr="01"
-	xmms2 playlist switch 01
-	read_playlist_history
-	xmms2 pause
-	xmms2 jump $history_track_nr
-	xmms2 seek $history_position
+        xmms2 playlist switch 01
+	xmms2 stop
+        xmms2 jump 1
 	xmms2 play
 	else
 	xmms2 toggle
@@ -185,9 +183,9 @@ fi
 if [ "$active_playlist_nr" != "03" ]
         then
         xmms2 playlist switch 03
-        xmms2 stop
+	xmms2 stop
         xmms2 jump 1
-        xmms2 play
+	xmms2 play
         else
         xmms2 toggle
 fi
@@ -214,9 +212,9 @@ fi
 if [ "$active_playlist_nr" != "04" ]
         then
         xmms2 playlist switch 04
-        xmms2 stop
+	xmms2 stop
         xmms2 jump 1
-        xmms2 play
+	xmms2 play
         else
         xmms2 toggle
 fi
@@ -243,9 +241,9 @@ fi
 if [ "$active_playlist_nr" != "05" ]
         then
         xmms2 playlist switch 05
-        xmms2 stop
+	xmms2 stop
         xmms2 jump 1
-        xmms2 play
+	xmms2 play
         else
         xmms2 toggle
 fi
@@ -272,9 +270,9 @@ fi
 if [ "$active_playlist_nr" != "06" ]
         then
         xmms2 playlist switch 06
-        xmms2 stop
+	xmms2 stop
         xmms2 jump 1
-        xmms2 play
+	xmms2 play
         else
         xmms2 toggle
 fi
