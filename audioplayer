@@ -60,24 +60,6 @@ gpio mode $pin_button06 output ; gpio write $pin_button06 0 ; gpio mode $pin_but
 gpio mode $pin_button_prev output ; gpio write $pin_button_prev 0 ; gpio mode $pin_button_prev input
 gpio mode $pin_button_next output ; gpio write $pin_button_next 0 ; gpio mode $pin_button_next input
 
-# Function resume play
-
-resume_play () {
-        xmms2 playlist switch $active_playlist_nr
-        xmms2 play
-        xmms2 pause
-        sleep 0.5
-        unset history_track ; history_track=$(grep "track" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
-        unset history_track_nr ; typeset -i history_track_nr ; history_track_nr=${history_track##track: }
-        unset history_playtime ; history_playtime=$(grep "playtime" /home/pi/audioplayer/.pls_history/pls$active_playlist_nr)
-        history_playtime=${history_playtime##playtime: }
-        unset history_playtime_min ; typeset -i history_playtime_min ; history_playtime_min=${history_playtime%:*}
-        unset history_playtime_sec ; typeset -i history_playtime_sec ; history_playtime_sec=${history_playtime#*:}
-        unset history_position ; typeset -i history_position ; history_position=60*$history_playtime_min+$history_playtime_sec
-        xmms2 jump $history_track_nr
-        xmms2 seek $history_position
-        xmms2 play
-                        }
 
 # Start loop
 
@@ -102,13 +84,6 @@ button_next=$(gpio read $pin_button_next)
 current_playtime=$(xmms2 current -f '${playtime}')
 current_playtime_min=${current_playtime:0:2}
 current_playtime_sec=${current_playtime:3:2}
-typeset -i current_playtime_pos1=${current_playtime:0:1}
-typeset -i current_playtime_pos2=${current_playtime:1:1}
-typeset -i current_playtime_pos3=${current_playtime:3:1}
-typeset -i current_playtime_pos4=${current_playtime:4:1}
-typeset -i current_seconds=600*$current_playtime_pos1+60*$current_playtime_pos2+10*$current_playtime_pos3+$current_playtime_pos4
-
-eval typeset -i history_seconds$active_playlist_nr=$current_seconds
 
 
 # Button 1
