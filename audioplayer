@@ -102,6 +102,13 @@ button_next=$(gpio read $pin_button_next)
 current_playtime=$(xmms2 current -f '${playtime}')
 current_playtime_min=${current_playtime:0:2}
 current_playtime_sec=${current_playtime:3:2}
+typeset -i current_playtime_pos1=${current_playtime:0:1}
+typeset -i current_playtime_pos2=${current_playtime:1:1}
+typeset -i current_playtime_pos3=${current_playtime:3:1}
+typeset -i current_playtime_pos4=${current_playtime:4:1}
+typeset -i current_seconds=600*$current_playtime_pos1+60*$current_playtime_pos2+10*$current_playtime_pos3+$current_playtime_pos4
+
+eval typeset -i history_seconds$active_playlist_nr=$current_seconds
 
 
 # Button 1
@@ -125,9 +132,9 @@ fi
 if [ "$active_playlist_nr" != "01" ]
 	then
         xmms2 playlist switch 01
-	xmms2 stop
+        xmms2 stop
         xmms2 jump 1
-	xmms2 play
+        xmms2 play
 	else
 	xmms2 toggle
 fi
@@ -154,9 +161,9 @@ fi
 if [ "$active_playlist_nr" != "02" ]
         then
         xmms2 playlist switch 02
-	xmms2 stop
+        xmms2 stop
         xmms2 jump 1
-	xmms2 play
+        xmms2 play
 	else
 	xmms2 toggle
 fi
