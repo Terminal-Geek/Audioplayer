@@ -1,14 +1,5 @@
 #!/bin/bash
 
-# Fill playlists
-
-xmms2 playlist clear 01 ; xmms2 add -p 01 /home/pi/audio/01/* ; xmms2 playlist sort -p 01
-xmms2 playlist clear 02 ; xmms2 add -p 02 /home/pi/audio/02/* ; xmms2 playlist sort -p 02
-xmms2 playlist clear 03 ; xmms2 add -p 03 /home/pi/audio/03/* ; xmms2 playlist sort -p 03
-xmms2 playlist clear 04 ; xmms2 add -p 04 /home/pi/audio/04/* ; xmms2 playlist sort -p 04
-xmms2 playlist clear 05 ; xmms2 add -P -p 05 /home/pi/audio/05/kiraka.m3u
-xmms2 playlist clear 06 ; xmms2 add -p 06 /home/pi/audio/06/* ; xmms2 playlist sort -p 06
-
 # Switch on status led
 
 gpio mode 26 output
@@ -68,9 +59,6 @@ do
 
 # Define variables
 
-active_playlist=$(xmms2 playlist list | grep "*")
-active_playlist_nr=${active_playlist:2:2}
-
 button01=$(gpio read $pin_button01)
 button02=$(gpio read $pin_button02)
 button03=$(gpio read $pin_button03)
@@ -81,10 +69,20 @@ button06=$(gpio read $pin_button06)
 button_prev=$(gpio read $pin_button_prev)
 button_next=$(gpio read $pin_button_next)
 
-current_playtime=$(xmms2 current -f '${playtime}')
-current_playtime_min=${current_playtime:0:2}
-current_playtime_sec=${current_playtime:3:2}
+# current_playtime=$(xmms2 current -f '${playtime}')
+# current_playtime_min=${current_playtime:0:2}
+# current_playtime_sec=${current_playtime:3:2}
+# active_playlist=$(xmms2 playlist list | grep "*")
+# active_playlist_nr=${active_playlist:2:2}
 
+# Function play
+
+play ()	{
+	mpc clear
+        mpc search filename $active_playlist_nr/ | mpc add
+        mpc play
+        sleep 0.5
+	}
 
 # Button 1
 
@@ -106,12 +104,11 @@ fi
 
 if [ "$active_playlist_nr" != "01" ]
 	then
-        xmms2 playlist switch 01
-        xmms2 stop
-        xmms2 jump 1
-        xmms2 play
+	active_playlist_nr=01
+	play
 	else
-	xmms2 toggle
+	mpc toggle
+	sleep 0.5
 fi
 
 
@@ -135,12 +132,11 @@ fi
 
 if [ "$active_playlist_nr" != "02" ]
         then
-        xmms2 playlist switch 02
-        xmms2 stop
-        xmms2 jump 1
-        xmms2 play
+        active_playlist_nr=02
+        play
 	else
-	xmms2 toggle
+	mpc toggle
+	sleep 0.5
 fi
 
 
@@ -164,12 +160,11 @@ fi
 
 if [ "$active_playlist_nr" != "03" ]
         then
-        xmms2 playlist switch 03
-	xmms2 stop
-        xmms2 jump 1
-	xmms2 play
+        active_playlist_nr=03
+        play
         else
-        xmms2 toggle
+        mpc toggle
+	sleep 0.5
 fi
 
 
@@ -193,12 +188,11 @@ fi
 
 if [ "$active_playlist_nr" != "04" ]
         then
-        xmms2 playlist switch 04
-	xmms2 stop
-        xmms2 jump 1
-	xmms2 play
+        active_playlist_nr=04
+        play
         else
-        xmms2 toggle
+        mpc toggle
+	sleep 0.5
 fi
 
 
@@ -222,12 +216,14 @@ fi
 
 if [ "$active_playlist_nr" != "05" ]
         then
-        xmms2 playlist switch 05
-	xmms2 stop
-        xmms2 jump 1
-	xmms2 play
-        else
-        xmms2 toggle
+	active_playlist_nr=05
+	mpc clear
+        mpc load kiraka
+	mpc play
+	sleep 0.5
+	else
+        mpc toggle
+	sleep 0.5
 fi
 
 
@@ -251,12 +247,11 @@ fi
 
 if [ "$active_playlist_nr" != "06" ]
         then
-        xmms2 playlist switch 06
-	xmms2 stop
-        xmms2 jump 1
-	xmms2 play
+        active_playlist_nr=06
+        play
         else
-        xmms2 toggle
+        mpc toggle
+	sleep 0.5
 fi
 
 
@@ -264,22 +259,14 @@ fi
 
 elif [ "$button_prev" = "1" ]
 	then
-
-	if [ $current_playtime_min -eq "00" -a $current_playtime_sec -lt "10" ]
-		then
-		xmms2 prev > /dev/null 2>&1
-		else
-		xmms2 seek 00:00
-fi
+	mpc prev
 
 
 # Button next title
 
 elif [ "$button_next" = "1" ]
 	then
-	xmms2 next > /dev/null 2>&1
-
-
+	mpc next
 fi
 
 done
