@@ -57,7 +57,7 @@ gpio mode $pin_button_next output ; gpio write $pin_button_next 0 ; gpio mode $p
 while true
 do
 
-# Define variables
+# Read button states
 
 button01=$(gpio read $pin_button01)
 button02=$(gpio read $pin_button02)
@@ -65,22 +65,28 @@ button03=$(gpio read $pin_button03)
 button04=$(gpio read $pin_button04)
 button05=$(gpio read $pin_button05)
 button06=$(gpio read $pin_button06)
-
 button_prev=$(gpio read $pin_button_prev)
 button_next=$(gpio read $pin_button_next)
 
-# current_playtime=$(xmms2 current -f '${playtime}')
-# current_playtime_min=${current_playtime:0:2}
-# current_playtime_sec=${current_playtime:3:2}
-# active_playlist=$(xmms2 playlist list | grep "*")
-# active_playlist_nr=${active_playlist:2:2}
+# Read current track and position
+
+status=$(mpc | grep "%)")
+
+position=${status##*(}
+position=${position%)}
+eval position$active_playlist_nr=$position
+
+track=${status##*#}
+track=${track%%/*}
+eval track$active_playlist_nr=$track
 
 # Function play
 
 play ()	{
 	mpc clear
         mpc search filename $active_playlist_nr/ | mpc add
-        mpc play
+        mpc play $track_nr
+	mpc seek $seek
         sleep 0.5
 	}
 
@@ -105,6 +111,8 @@ fi
 if [ "$active_playlist_nr" != "01" ]
 	then
 	active_playlist_nr=01
+	track_nr=$track01
+        seek=$position01
 	play
 	else
 	mpc toggle
@@ -133,6 +141,8 @@ fi
 if [ "$active_playlist_nr" != "02" ]
         then
         active_playlist_nr=02
+        track_nr=$track02
+        seek=$position02
         play
 	else
 	mpc toggle
@@ -161,6 +171,8 @@ fi
 if [ "$active_playlist_nr" != "03" ]
         then
         active_playlist_nr=03
+        track_nr=$track03
+        seek=$position03
         play
         else
         mpc toggle
@@ -189,6 +201,8 @@ fi
 if [ "$active_playlist_nr" != "04" ]
         then
         active_playlist_nr=04
+        track_nr=$track04
+        seek=$position04
         play
         else
         mpc toggle
@@ -248,6 +262,8 @@ fi
 if [ "$active_playlist_nr" != "06" ]
         then
         active_playlist_nr=06
+        track_nr=$track06
+        seek=$position06
         play
         else
         mpc toggle
@@ -260,6 +276,7 @@ fi
 elif [ "$button_prev" = "1" ]
 	then
 	mpc prev
+	sleep 0.5
 
 
 # Button next title
@@ -267,6 +284,7 @@ elif [ "$button_prev" = "1" ]
 elif [ "$button_next" = "1" ]
 	then
 	mpc next
+	sleep 0.5
 fi
 
 done
